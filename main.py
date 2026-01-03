@@ -38,6 +38,13 @@ def seg_command(parser, args):
         print(s)
     else:
         output_path = pathlib.Path(args.output)
+        if output_path.is_file() and output_path.exists():
+            while True:
+                y_or_n = input("Would you like to overwrite? (y/n)")
+                if y_or_n.startswith("y"):
+                    break
+                elif y_or_n.startswith("n"):
+                    return
         output_path.write_text(s)
 
 

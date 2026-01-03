@@ -1,26 +1,5 @@
 import pyhanlp
 
-numerals = set(
-    [
-        "零",
-        "〇",
-        "一",
-        "二",
-        "三",
-        "四",
-        "五",
-        "六",
-        "七",
-        "八",
-        "九",
-        "十",
-        "百",
-        "千",
-        "万",
-        "亿",
-    ]
-)
-
 
 def segment(path):
     word_set = set()
@@ -34,12 +13,8 @@ def segment(path):
                         and not str(term.word).isdigit()
                     ):
                         word_set.add((str(term.word), str(term.nature)))
-                        # print(term.word)
-                        # print(term.nature)
-                    # if str(term.nature) == "m":
-                    #     print(term.word)
-    # print(word_set)
     print(len(word_set))
-    for word in word_set:
-        if word[1] == "e":
-            print(word)
+    # for word in word_set:
+    #     if word[1] == "e":
+    #         print(word)
+    return "\n".join([word[0] for word in word_set])
