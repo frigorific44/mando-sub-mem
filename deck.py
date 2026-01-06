@@ -25,7 +25,7 @@ mem_model = genanki.Model(
         },
         {
             "name": "Recollection-Simplified",
-            "qfmt": "{{Gloss}}",
+            "qfmt": "<!-- Simplified -->{{Gloss}}",
             "afmt": '<ruby class="hanzi">{{Simplified}}<rt>{{Pinyin}}</rt></ruby><hr id=answer>{{Gloss}}',
         },
         {
@@ -35,10 +35,22 @@ mem_model = genanki.Model(
         },
         {
             "name": "Recollection-Traditional",
-            "qfmt": "{{Gloss}}",
+            "qfmt": "<!-- Traditional -->{{Gloss}}",
             "afmt": '<ruby class="hanzi">{{Traditional}}<rt>{{Pinyin}}</rt></ruby><hr id=answer>{{Gloss}}',
         },
     ],
+    css="""
+.card {
+    font-family: sans-serif;
+    font-size: 24px;
+    line-height: 2;
+    text-align: center;
+}
+
+.hanzi {
+    font-size: 36px;
+}
+""",
 )
 
 
