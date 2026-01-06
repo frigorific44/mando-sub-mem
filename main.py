@@ -24,7 +24,7 @@ def main():
         "-c", "--char-set", choices=["traditional", "simplified"], required=True
     )
     parser_dec.add_argument("-i", "--input", required=True)
-    parser_dec.add_argument("-o", "--output", required=True)
+    parser_dec.add_argument("-n", "--name", required=True)
 
     args = parser.parse_args()
     # print(args)
@@ -62,11 +62,10 @@ def seg_command(parser, args):
 def dec_command(parser, args):
     dict_path = pathlib.Path(args.dictionary)
     input_path = pathlib.Path(args.input)
-    output_path = pathlib.Path(args.output)
     if not dict_path.is_file():
         parser.print_usage()
         print("Dictionary is not a file path.")
-    deck.deck(dict_path, args.char_set, input_path, output_path)
+    deck.deck(dict_path, args.char_set, input_path, args.name)
 
 
 if __name__ == "__main__":
