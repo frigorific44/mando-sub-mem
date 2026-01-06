@@ -7,7 +7,8 @@ import genanki
 pinyin_exp = re.compile(
     r"(?:[bpmfdtnlgkhjqxrzcsyw]|[zcs]h)[aeioung:]+\d", re.IGNORECASE
 )
-tones = ["ˉ", "ˊ", "ˇ", "ˋ"]
+tone_placement_exp = re.compile(r"(a|e|o(?=u)|[oiuü](?=$|n))", re.IGNORECASE)
+tones = ["\u0304", "\u0301", "\u030c", "\u0300"]
 mem_model = genanki.Model(
     model_id=1743404006,
     name="MandoSubMem",
@@ -57,6 +58,7 @@ def pinyin_num_to_diacritic(syllable: str) -> str:
     tone = tones[tone_num]
     syllable = syllable[:-1]
     syllable.replace("u:", "ü")
+    syllable = tone_placement_exp.sub(r"\1" + tone, syllable, 1)
     return syllable
 
 
@@ -71,6 +73,11 @@ def deck(dict_path, char_set, input_path, deck_name):
                 break
         for line in dict_text:
             line = line.strip("\n")
+
+            def pinyin_repl(match):
+                return pinyin_num_to_diacritic(match[0])
+
+            line = pinyin_exp.sub(pinyin_repl, line)
             sense_boundary = line.strip("/").split("/")
             senses = sense_boundary[1:]
             pinyin_boundary = sense_boundary[0].split("[")
