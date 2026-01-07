@@ -1,9 +1,10 @@
 import pathlib
 import random
 import re
-from collections import namedtuple
+from collections import defaultdict, namedtuple
 
 import genanki
+from htpy import div, hr, rt, ruby
 
 
 # This is all to ensure the two models contain identical formatting.
@@ -28,30 +29,41 @@ model_fields = [
     {"name": "Pinyin"},
     {"name": "Gloss"},
 ]
-model_tmpt_tmpts = {
-    "recognition": {
-        "name": "Recognition",
-        "qfmt": '<div class="hanzi">{{{{{THIS_SET}}}}}</div>',
-        "afmt": '<ruby class="hanzi">{{{{{THIS_SET}}}}}<rt>{{{{Pinyin}}}}</rt></ruby><hr id=answer>{{{{Gloss}}}}',
-    },
-    "recollection": {
-        "name": "Recollection",
-        "qfmt": "{{{{Gloss}}}}",
-        "afmt": '<ruby class="hanzi">{{{{{THIS_SET}}}}}<rt>{{{{Pinyin}}}}</rt></ruby><hr id=answer>{{{{Gloss}}}}',
-    },
-}
+
+
+def tmpl_recog_q(char_set):
+    tmpl = div(".hanzi")[f"{{{{{char_set}}}}}"]
+    return str(tmpl)
+
+
+def tmpl_recol_q():
+    tmpl = str(div(".gloss")["{{Gloss}}"])
+    return str(tmpl)
+
+
+def tmpl_a(char_set):
+    tmpl = div[
+        ruby(".hanzi")[f"{{{{{char_set}}}}}", rt["{{Pinyin}}"]],
+        hr("#answer"),
+        div(".gloss")["{{Gloss}}"],
+    ]
+    return str(tmpl)
+
+
 traditional_model = genanki.Model(
     model_id=1743404006,
     name="MandoSubMem-Traditional",
     fields=model_fields,
     templates=[
         {
-            k: v.format(THIS_SET="Traditional")
-            for k, v in model_tmpt_tmpts["recognition"].items()
+            "name": "Recognition",
+            "qfmt": tmpl_recog_q("Traditional"),
+            "afmt": tmpl_a("Traditional"),
         },
         {
-            k: v.format(THIS_SET="Traditional")
-            for k, v in model_tmpt_tmpts["recollection"].items()
+            "name": "Recollection",
+            "qfmt": tmpl_recol_q(),
+            "afmt": tmpl_a("Traditional"),
         },
     ],
     css=model_css,
@@ -62,12 +74,14 @@ simplified_model = genanki.Model(
     fields=model_fields,
     templates=[
         {
-            k: v.format(THIS_SET="Simplified")
-            for k, v in model_tmpt_tmpts["recognition"].items()
+            "name": "Recognition",
+            "qfmt": tmpl_recog_q("Simplified"),
+            "afmt": tmpl_a("Simplified"),
         },
         {
-            k: v.format(THIS_SET="Simplified")
-            for k, v in model_tmpt_tmpts["recollection"].items()
+            "name": "Recollection",
+            "qfmt": tmpl_recol_q(),
+            "afmt": tmpl_a("Simplified"),
         },
     ],
     css=model_css,
@@ -82,22 +96,24 @@ class MandoNote(genanki.Note):
         return super().guid()
 
 
+TermEntry = namedtuple(
+    "TermEntry",
+    ["simplified", "traditional", "pinyin", "gloss"],
+    defaults=["", "", "", ""],
+)
+
+
 def deck(
     dict_path: pathlib.Path, char_set: str, input_path: pathlib.Path, deck_name: str
 ):
-    ce_dict = dict()
-    TermEntry = namedtuple(
-        "TermEntry", ["simplified", "traditional", "pinyin", "gloss"]
-    )
+    ce_dict = defaultdict(list)
     with open(dict_path, encoding="utf-8") as dict_text:
         for line in dict_text:
             if not line.startswith("#"):
                 break
         for line in dict_text:
             line = line.strip("\n")
-
             line = cedict_pinyin_num_to_diacritic(line)
-
             sense_boundary = line.strip("/").split("/")
             senses = sense_boundary[1:]
             pinyin_boundary = sense_boundary[0].split("[")
@@ -112,9 +128,9 @@ def deck(
                 ce_key = traditional
             else:
                 ce_key = simplified
-            if ce_key in ce_dict:
-                print(ce_key)
-            ce_dict[ce_key] = entry
+            # if ce_key in ce_dict:
+            #     print(ce_key)
+            ce_dict[ce_key].append(entry)
 
     to_add = set()
     for word in input_path.read_text(encoding="UTF-8").split("\n"):
@@ -150,8 +166,8 @@ def deck(
     new_deck = genanki.Deck(deck_id=random.randrange(1 << 30, 1 << 31), name=deck_name)
     mem_model = traditional_model if char_set == "traditional" else simplified_model
     for word in to_add:
-        entry = ce_dict[word]
-        new_note = MandoNote(model=mem_model, fields=[*entry])
+        note_fields = reconcile_entries(ce_dict[word])
+        new_note = MandoNote(model=mem_model, fields=[*note_fields])
         new_deck.add_note(new_note)
 
     genanki.Package(new_deck).write_to_file("output.apkg")
@@ -183,3 +199,23 @@ def cedict_pinyin_num_to_diacritic(s: str) -> str:
 
     # Give pinyin number-toned syllables diacritics instead.
     return brackets_exp.sub(syllable_repl, s)
+
+
+def reconcile_entries(entries: list[TermEntry]) -> tuple:
+    if len(entries) == 1:
+        return entries[0]
+
+    reconciled_entry = ["", "", "", ""]
+    # Set fields that are the same across all dictionary entries.
+    field_sets = [set() for i in range(len(TermEntry()._fields))]
+    for entry in entries:
+        for i, field in enumerate(entry):
+            field_sets[i].add(field)
+    for i in range(len(field_sets)):
+        if len(field_sets[i]) == 1:
+            reconciled_entry[i] = field_sets[i].pop()
+    # Sort by pinyin, with proper nouns last, and add:
+    for entry in sorted(entries, key=lambda t_entry: t_entry.pinyin.swapcase()):
+        reconciled_entry[TermEntry()._fields.index("gloss")] += f"<p>{entry.gloss}</p>"
+
+    return TermEntry(*reconciled_entry)
