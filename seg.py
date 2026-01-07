@@ -1,7 +1,8 @@
+import pathlib
 import pyhanlp
 
 
-def segment(path):
+def segment(path: pathlib.Path) -> str:
     word_set = set()
     with open(path, encoding="utf-8") as subtitle_text:
         for line in subtitle_text:

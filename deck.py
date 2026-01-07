@@ -1,3 +1,4 @@
+import pathlib
 import random
 import re
 from collections import namedtuple
@@ -53,7 +54,7 @@ mem_model = genanki.Model(
 """,
 )
 
-
+# TODO: Should configure the note to only call hash function on everything but the glossary.
 # class MandoNote(genanki.Note):
 #     @property
 #     def guid(self):
@@ -75,7 +76,9 @@ def pinyin_num_to_diacritic(syllable: str) -> str:
     return syllable
 
 
-def deck(dict_path, char_set, input_path, deck_name):
+def deck(
+    dict_path: pathlib.Path, char_set: str, input_path: pathlib.Path, deck_name: str
+):
     ce_dict = dict()
     TermEntry = namedtuple(
         "TermEntry", ["simplified", "traditional", "pinyin", "gloss"]
@@ -87,13 +90,15 @@ def deck(dict_path, char_set, input_path, deck_name):
         for line in dict_text:
             line = line.strip("\n")
 
-            def pinyin_repl(match):
+            def pinyin_repl(match: re.Match) -> str:
                 return pinyin_num_to_diacritic(match[0])
 
-            def syllable_repl(match):
+            def syllable_repl(match: re.Match) -> str:
                 return syllable_exp.sub(pinyin_repl, match[0])
 
+            # Give pinyin number-toned syllables diacritics instead.
             line = brackets_exp.sub(syllable_repl, line)
+
             sense_boundary = line.strip("/").split("/")
             senses = sense_boundary[1:]
             pinyin_boundary = sense_boundary[0].split("[")
@@ -103,7 +108,7 @@ def deck(dict_path, char_set, input_path, deck_name):
             simplified = term_boundary[1]
             gloss = "<br>".join(senses)
             entry = TermEntry(simplified, traditional, pinyin, gloss)
-            # TODO: Check if entry already exists.
+            # TODO: Check if entry already exists. Otherwise it will be overwritten.
             if char_set == "traditional":
                 ce_dict[traditional] = entry
             else:
@@ -114,24 +119,24 @@ def deck(dict_path, char_set, input_path, deck_name):
         if word in ce_dict:
             to_add.add(word)
         else:
-            # Calculate substring combinations
-            def word_combos(runes):
+            # Calculate combinations of substrings contained in the dictionary.
+            def defined_substr_combos(runes: str) -> list[list[str]]:
                 if runes == "":
                     return [[]]
                 combos = []
                 for i in range(len(runes)):
                     curr = runes[: i + 1]
                     if curr in ce_dict:
-                        remainder = word_combos(runes[i + 1 :])
+                        remainder = defined_substr_combos(runes[i + 1 :])
                         for r_combo in remainder:
                             combos.append([curr, *r_combo])
                 return combos
 
-            w_combos = word_combos(word)
-
-            def combo_metric(combo):
+            # Longer substrings are favored.
+            def combo_metric(combo: list[str]) -> int:
                 return sum([len(w) ** 2 for w in combo])
 
+            w_combos = defined_substr_combos(word)
             max_combo = max([combo_metric(w_combo) for w_combo in w_combos])
             w_combos = [
                 w_combo for w_combo in w_combos if combo_metric(w_combo) == max_combo
@@ -147,6 +152,3 @@ def deck(dict_path, char_set, input_path, deck_name):
         new_deck.add_note(new_note)
 
     genanki.Package(new_deck).write_to_file("output.apkg")
-    # for k, v in ce_dict.items():
-    #     print(k)
-    #     print(v.gloss)
