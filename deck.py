@@ -5,10 +5,6 @@ from collections import namedtuple
 
 import genanki
 
-brackets_exp = re.compile(r"(?<=\[).+?(?=\])")
-syllable_exp = re.compile(r"[a-z]+[1-5](?!\d)", re.IGNORECASE)
-tone_exp = re.compile(r"(a|e|o(?=u)|[oiuü](?=$|n))", re.IGNORECASE)
-tones = ["\u0304", "\u0301", "\u030c", "\u0300", "\u200b"]
 
 # This is all to ensure the two models contain identical formatting.
 # Two separate models are maintained because Traditional and Simplified characters
@@ -86,21 +82,6 @@ class MandoNote(genanki.Note):
         return super().guid()
 
 
-def pinyin_num_to_diacritic(syllable: str) -> str:
-    if len(syllable) < 1 or not syllable[-1].isdigit():
-        print(syllable)
-        return syllable
-    tone_num = int(syllable[-1]) - 1
-    if tone_num < 0 or tone_num >= len(tones):
-        print(syllable)
-        return syllable
-    tone = tones[tone_num]
-    syllable = syllable[:-1]
-    syllable.replace("u:", "ü")
-    syllable = tone_exp.sub(r"\1" + tone, syllable, 1)
-    return syllable
-
-
 def deck(
     dict_path: pathlib.Path, char_set: str, input_path: pathlib.Path, deck_name: str
 ):
@@ -115,14 +96,7 @@ def deck(
         for line in dict_text:
             line = line.strip("\n")
 
-            def pinyin_repl(match: re.Match) -> str:
-                return pinyin_num_to_diacritic(match[0])
-
-            def syllable_repl(match: re.Match) -> str:
-                return syllable_exp.sub(pinyin_repl, match[0])
-
-            # Give pinyin number-toned syllables diacritics instead.
-            line = brackets_exp.sub(syllable_repl, line)
+            line = cedict_pinyin_num_to_diacritic(line)
 
             sense_boundary = line.strip("/").split("/")
             senses = sense_boundary[1:]
@@ -181,3 +155,31 @@ def deck(
         new_deck.add_note(new_note)
 
     genanki.Package(new_deck).write_to_file("output.apkg")
+
+
+def cedict_pinyin_num_to_diacritic(s: str) -> str:
+    brackets_exp = re.compile(r"(?<=\[).+?(?=\])")
+    syllable_exp = re.compile(r"[a-z]+[1-5](?!\d)", re.IGNORECASE)
+    tone_exp = re.compile(r"(a|e|o(?=u)|[oiuü](?=$|n))", re.IGNORECASE)
+    tones = ["\u0304", "\u0301", "\u030c", "\u0300", "\u200b"]
+
+    def pinyin_repl(match: re.Match) -> str:
+        syllable = match[0]
+        if len(syllable) < 1 or not syllable[-1].isdigit():
+            print(syllable)
+            return syllable
+        tone_num = int(syllable[-1]) - 1
+        if tone_num < 0 or tone_num >= len(tones):
+            print(syllable)
+            return syllable
+        tone = tones[tone_num]
+        syllable = syllable[:-1]
+        syllable.replace("u:", "ü")
+        syllable = tone_exp.sub(r"\1" + tone, syllable, 1)
+        return syllable
+
+    def syllable_repl(match: re.Match) -> str:
+        return syllable_exp.sub(pinyin_repl, match[0])
+
+    # Give pinyin number-toned syllables diacritics instead.
+    return brackets_exp.sub(syllable_repl, s)
