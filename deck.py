@@ -9,38 +9,12 @@ brackets_exp = re.compile(r"(?<=\[).+?(?=\])")
 syllable_exp = re.compile(r"[a-z]+[1-5](?!\d)", re.IGNORECASE)
 tone_exp = re.compile(r"(a|e|o(?=u)|[oiuü](?=$|n))", re.IGNORECASE)
 tones = ["\u0304", "\u0301", "\u030c", "\u0300", "\u200b"]
-mem_model = genanki.Model(
-    model_id=1743404006,
-    name="MandoSubMem",
-    fields=[
-        {"name": "Simplified"},
-        {"name": "Traditional"},
-        {"name": "Pinyin"},
-        {"name": "Gloss"},
-    ],
-    templates=[
-        {
-            "name": "Recognition-Simplified",
-            "qfmt": '<div class="hanzi">{{Simplified}}</div>',
-            "afmt": '<ruby class="hanzi">{{Simplified}}<rt>{{Pinyin}}</rt></ruby><hr id=answer>{{Gloss}}',
-        },
-        {
-            "name": "Recollection-Simplified",
-            "qfmt": "<!-- Simplified -->{{Gloss}}",
-            "afmt": '<ruby class="hanzi">{{Simplified}}<rt>{{Pinyin}}</rt></ruby><hr id=answer>{{Gloss}}',
-        },
-        {
-            "name": "Recognition-Traditional",
-            "qfmt": '<div class="hanzi">{{Traditional}}</div>',
-            "afmt": '<ruby class="hanzi">{{Traditional}}<rt>{{Pinyin}}</rt></ruby><hr id=answer>{{Gloss}}',
-        },
-        {
-            "name": "Recollection-Traditional",
-            "qfmt": "<!-- Traditional -->{{Gloss}}",
-            "afmt": '<ruby class="hanzi">{{Traditional}}<rt>{{Pinyin}}</rt></ruby><hr id=answer>{{Gloss}}',
-        },
-    ],
-    css="""
+
+# This is all to ensure the two models contain identical formatting.
+# Two separate models are maintained because Traditional and Simplified characters
+# are not one to one, and glosses are combined on characters, so cards will be
+# different depending on which character set is the focus.
+model_css = """
 .card {
     font-family: sans-serif;
     font-size: 24px;
@@ -51,14 +25,65 @@ mem_model = genanki.Model(
 .hanzi {
     font-size: 36px;
 }
-""",
+"""
+model_fields = [
+    {"name": "Simplified"},
+    {"name": "Traditional"},
+    {"name": "Pinyin"},
+    {"name": "Gloss"},
+]
+model_tmpt_tmpts = {
+    "recognition": {
+        "name": "Recognition",
+        "qfmt": '<div class="hanzi">{{{{{THIS_SET}}}}}</div>',
+        "afmt": '<ruby class="hanzi">{{{{{THIS_SET}}}}}<rt>{{{{Pinyin}}}}</rt></ruby><hr id=answer>{{{{Gloss}}}}',
+    },
+    "recollection": {
+        "name": "Recollection",
+        "qfmt": "{{{{Gloss}}}}",
+        "afmt": '<ruby class="hanzi">{{{{{THIS_SET}}}}}<rt>{{{{Pinyin}}}}</rt></ruby><hr id=answer>{{{{Gloss}}}}',
+    },
+}
+traditional_model = genanki.Model(
+    model_id=1743404006,
+    name="MandoSubMem-Traditional",
+    fields=model_fields,
+    templates=[
+        {
+            k: v.format(THIS_SET="Traditional")
+            for k, v in model_tmpt_tmpts["recognition"].items()
+        },
+        {
+            k: v.format(THIS_SET="Traditional")
+            for k, v in model_tmpt_tmpts["recollection"].items()
+        },
+    ],
+    css=model_css,
+)
+simplified_model = genanki.Model(
+    model_id=1790468694,
+    name="MandoSubMem-Simplified",
+    fields=model_fields,
+    templates=[
+        {
+            k: v.format(THIS_SET="Simplified")
+            for k, v in model_tmpt_tmpts["recognition"].items()
+        },
+        {
+            k: v.format(THIS_SET="Simplified")
+            for k, v in model_tmpt_tmpts["recollection"].items()
+        },
+    ],
+    css=model_css,
 )
 
-# TODO: Should configure the note to only call hash function on everything but the glossary.
-# class MandoNote(genanki.Note):
-#     @property
-#     def guid(self):
-#         return genanki.guid_for(self.fields[0], self.fields[1])
+
+class MandoNote(genanki.Note):
+    @property
+    def guid(self):
+        if self.fields is not None:
+            return genanki.guid_for(*self.fields[:3])
+        return super().guid()
 
 
 def pinyin_num_to_diacritic(syllable: str) -> str:
@@ -110,9 +135,12 @@ def deck(
             entry = TermEntry(simplified, traditional, pinyin, gloss)
             # TODO: Check if entry already exists. Otherwise it will be overwritten.
             if char_set == "traditional":
-                ce_dict[traditional] = entry
+                ce_key = traditional
             else:
-                ce_dict[simplified] = entry
+                ce_key = simplified
+            if ce_key in ce_dict:
+                print(ce_key)
+            ce_dict[ce_key] = entry
 
     to_add = set()
     for word in input_path.read_text(encoding="UTF-8").split("\n"):
@@ -146,9 +174,10 @@ def deck(
                     to_add.add(w)
 
     new_deck = genanki.Deck(deck_id=random.randrange(1 << 30, 1 << 31), name=deck_name)
+    mem_model = traditional_model if char_set == "traditional" else simplified_model
     for word in to_add:
         entry = ce_dict[word]
-        new_note = genanki.Note(model=mem_model, fields=[*entry])
+        new_note = MandoNote(model=mem_model, fields=[*entry])
         new_deck.add_note(new_note)
 
     genanki.Package(new_deck).write_to_file("output.apkg")
