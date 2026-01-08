@@ -1,3 +1,4 @@
+from seg import segment
 import pathlib
 import random
 import re
@@ -153,10 +154,11 @@ def deck(
             #     print(ce_key)
             ce_dict[ce_key].append(entry)
 
-    to_add = set()
-    for word in input_path.read_text(encoding="UTF-8").split("\n"):
+    to_add = dict()
+    for word in segment(input_path):
         if word in ce_dict:
-            to_add.add(word)
+            if word not in to_add:
+                to_add[word] = True
         else:
             # Calculate combinations of substrings contained in the dictionary.
             def defined_substr_combos(runes: str) -> list[list[str]]:
@@ -182,7 +184,8 @@ def deck(
             ]
             for combo in w_combos:
                 for w in combo:
-                    to_add.add(w)
+                    if word not in to_add:
+                        to_add[word] = True
 
     new_deck = genanki.Deck(deck_id=random.randrange(1 << 30, 1 << 31), name=deck_name)
     mem_model = traditional_model if char_set == "traditional" else simplified_model

@@ -2,7 +2,7 @@ import pathlib
 import pyhanlp
 
 
-def segment(path: pathlib.Path) -> str:
+def segment(path: pathlib.Path) -> list[str]:
     word_set = dict()
     with open(path, encoding="utf-8") as subtitle_text:
         for line in subtitle_text:
@@ -18,4 +18,4 @@ def segment(path: pathlib.Path) -> str:
     # for word in word_set:
     #     if word[1] == "e":
     #         print(word)
-    return "\n".join(word_set)
+    return list(word_set)
