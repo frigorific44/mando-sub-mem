@@ -232,7 +232,7 @@ def reconcile_entries(entries: list[TermEntry]) -> tuple:
     field_sets = [set() for i in range(len(TermEntry()._fields))]
     for entry in entries:
         for i, field in enumerate(entry):
-            field_sets[i].add(field)
+            field_sets[i].add(field.lower())
     for i in range(len(field_sets)):
         if len(field_sets[i]) == 1:
             reconciled_entry[i] = field_sets[i].pop()
