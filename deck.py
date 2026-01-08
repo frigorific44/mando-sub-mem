@@ -4,7 +4,8 @@ import re
 from collections import defaultdict, namedtuple
 
 import genanki
-from htpy import div, hr, rt, ruby
+from htpy import div, hr, rt, ruby, h2, span, p
+from markupsafe import Markup
 
 
 # This is all to ensure the two models contain identical formatting.
@@ -204,6 +205,7 @@ def cedict_pinyin_num_to_diacritic(s: str) -> str:
 def reconcile_entries(entries: list[TermEntry]) -> tuple:
     if len(entries) == 1:
         return entries[0]
+    # print(entries[0].simplified)
 
     reconciled_entry = ["", "", "", ""]
     # Set fields that are the same across all dictionary entries.
@@ -216,6 +218,19 @@ def reconcile_entries(entries: list[TermEntry]) -> tuple:
             reconciled_entry[i] = field_sets[i].pop()
     # Sort by pinyin, with proper nouns last, and add:
     for entry in sorted(entries, key=lambda t_entry: t_entry.pinyin.swapcase()):
-        reconciled_entry[TermEntry()._fields.index("gloss")] += f"<p>{entry.gloss}</p>"
+        part = str(
+            div[
+                h2[
+                    (
+                        span[field]
+                        for i, field in enumerate(entry)
+                        if reconciled_entry[i] == ""
+                        and i != TermEntry()._fields.index("gloss")
+                    )
+                ],
+                p[Markup(entry.gloss)],
+            ]
+        )
+        reconciled_entry[TermEntry()._fields.index("gloss")] += part
 
     return TermEntry(*reconciled_entry)
