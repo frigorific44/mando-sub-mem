@@ -36,6 +36,11 @@ def dec_command(parser, args):
     if not dict_path.is_file():
         parser.print_usage()
         print("Dictionary is not a file path.")
+        return
+    if args.name == "":
+        parser.print_usage()
+        print("Deck name cannot be an empty string.")
+        return
     deck.deck(dict_path, args.char_set, input_path, args.name)
 
 
