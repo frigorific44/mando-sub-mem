@@ -145,7 +145,6 @@ def deck(
             simplified = term_boundary[1]
             gloss = "<br>".join(senses)
             entry = TermEntry(simplified, traditional, pinyin, gloss)
-            # TODO: Check if entry already exists. Otherwise it will be overwritten.
             if char_set == "traditional":
                 ce_key = traditional
             else:
@@ -185,12 +184,14 @@ def deck(
             for combo in w_combos:
                 for w in combo:
                     if word not in to_add:
-                        to_add[word] = True
+                        to_add[w] = True
+                    pass
 
     new_deck = genanki.Deck(
         deck_id=random.randrange(1 << 30, 1 << 31), name=f"MandoSubMem::{deck_name}"
     )
     mem_model = traditional_model if char_set == "traditional" else simplified_model
+    print(f"Notes: {len(to_add)}")
     for word in to_add:
         note_fields = reconcile_entries(ce_dict[word])
         new_note = MandoNote(model=mem_model, fields=[*note_fields])

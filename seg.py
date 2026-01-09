@@ -15,7 +15,5 @@ def segment(path: pathlib.Path) -> list[str]:
                     ):
                         if str(term.word) not in word_set:
                             word_set[str(term.word)] = True
-    # for word in word_set:
-    #     if word[1] == "e":
-    #         print(word)
+    print(f"Segments: {len(word_set)}")
     return list(word_set)
