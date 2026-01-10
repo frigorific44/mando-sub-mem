@@ -2,6 +2,7 @@ import argparse
 import pathlib
 
 import deck
+import ext
 
 
 def main():
@@ -13,6 +14,8 @@ def main():
     )
 
     parser_ext = subparsers.add_parser("ext", help="ext help")
+    parser_ext.add_argument("-i", "--input", required=True)
+    parser_ext.add_argument("-o", "--output")
 
     parser_dec = subparsers.add_parser("dec")
     parser_dec.add_argument("-d", "--dictionary", required=True)
@@ -25,9 +28,28 @@ def main():
     args = parser.parse_args()
     # print(args)
     if args.cmd == "ext":
-        print("ext")
+        ext_command(parser_ext, args)
     elif args.cmd == "dec":
         dec_command(parser_dec, args)
+
+
+def ext_command(parser, args):
+    input_path = pathlib.Path(args.input)
+    if not input_path.is_file():
+        parser.print_usage()
+        print("Input to extract from is not a file.")
+    stream_options = ext.get_subtitle_streams(input_path)
+    for k, v in stream_options.items():
+        print(f"{k}: {v}")
+    chosen = ""
+    while chosen not in stream_options:
+        chosen = input("Choose a stream: ")
+    out = ext.ext(input_path, int(chosen) - 2)
+    if args.output:
+        output_path = pathlib.Path(args.output)
+        output_path.write_text(out, encoding="utf-8")
+    else:
+        print(out)
 
 
 def dec_command(parser, args):
