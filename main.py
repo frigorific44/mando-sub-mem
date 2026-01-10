@@ -7,23 +7,42 @@ import ext
 
 def main():
     parser = argparse.ArgumentParser(
-        prog="mandosubmem", description="What the program does"
+        prog="mandosubmem",
+        description="Build Anki decks from subtitles for Chinese language-learning.",
     )
     subparsers = parser.add_subparsers(
-        required=True, dest="cmd", help="subcommand help"
+        required=True, dest="cmd", help="one of the subcommands must be provided"
     )
 
-    parser_ext = subparsers.add_parser("ext", help="ext help")
-    parser_ext.add_argument("-i", "--input", required=True)
-    parser_ext.add_argument("-o", "--output")
+    parser_ext = subparsers.add_parser(
+        "ext", help="extract subtitles from a video file"
+    )
+    parser_ext.add_argument(
+        "-i", "--input", required=True, help="video file to extract subtitle from"
+    )
+    parser_ext.add_argument(
+        "-o",
+        "--output",
+        help="output file to write subtitles to if provided, otherwise they're written to stdout",
+    )
 
-    parser_dec = subparsers.add_parser("dec")
-    parser_dec.add_argument("-d", "--dictionary", required=True)
+    parser_dec = subparsers.add_parser(
+        "dec", help="generate an Anki deck from subtitles."
+    )
     parser_dec.add_argument(
-        "-c", "--char-set", choices=["traditional", "simplified"], required=True
+        "-d", "--dictionary", required=True, help="a CC-CEDICT dictionary file"
     )
-    parser_dec.add_argument("-i", "--input", required=True)
-    parser_dec.add_argument("-n", "--name", required=True)
+    parser_dec.add_argument(
+        "-c",
+        "--char-set",
+        choices=["traditional", "simplified"],
+        required=True,
+        help="whether the subtitles and generated cards are targeting Traditional or Simplified Chinese",
+    )
+    parser_dec.add_argument(
+        "-i", "--input", required=True, help="the SRT subtitle file"
+    )
+    parser_dec.add_argument("-n", "--name", required=True, help="the name of the deck")
 
     args = parser.parse_args()
     # print(args)
