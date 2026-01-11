@@ -40,7 +40,10 @@ def main():
         help="whether the subtitles and generated cards are targeting Traditional or Simplified Chinese",
     )
     parser_dec.add_argument(
-        "-i", "--input", required=True, help="the SRT subtitle file"
+        "-i",
+        "--input",
+        required=True,
+        help="either an .srt file or a video file with a text subtitle stream",
     )
     parser_dec.add_argument("-n", "--name", required=True, help="the name of the deck")
 
@@ -57,18 +60,23 @@ def ext_command(parser, args):
     if not input_path.is_file():
         parser.print_usage()
         print("Input to extract from is not a file.")
+        return
+    subs = ext.ext(input_path, int(subtitles_prompt(input_path)) - 2)
+    if args.output:
+        output_path = pathlib.Path(args.output)
+        output_path.write_text(subs, encoding="utf-8")
+    else:
+        print(subs)
+
+
+def subtitles_prompt(input_path: pathlib.Path):
     stream_options = ext.get_subtitle_streams(input_path)
     for k, v in stream_options.items():
         print(f"{k}: {v}")
     chosen = ""
     while chosen not in stream_options:
         chosen = input("Choose a stream: ")
-    out = ext.ext(input_path, int(chosen) - 2)
-    if args.output:
-        output_path = pathlib.Path(args.output)
-        output_path.write_text(out, encoding="utf-8")
-    else:
-        print(out)
+    return chosen
 
 
 def dec_command(parser, args):
@@ -78,11 +86,19 @@ def dec_command(parser, args):
         parser.print_usage()
         print("Dictionary is not a file path.")
         return
+    if not input_path.is_file():
+        parser.print_usage()
+        print("Input is not a file.")
+        return
     if args.name == "":
         parser.print_usage()
         print("Deck name cannot be an empty string.")
         return
-    deck.deck(dict_path, args.char_set, input_path, args.name)
+    if input_path.suffix == ".srt":
+        subs = input_path.read_text(encoding="utf-8")
+    else:
+        subs = ext.ext(input_path, int(subtitles_prompt(input_path)) - 2)
+    deck.deck(dict_path, args.char_set, subs, args.name)
 
 
 if __name__ == "__main__":

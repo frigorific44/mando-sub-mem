@@ -1,4 +1,3 @@
-from seg import segment
 import pathlib
 import random
 import re
@@ -7,6 +6,8 @@ from collections import defaultdict, namedtuple
 import genanki
 from htpy import div, h1, h2, hr, p, rt, ruby, span
 from markupsafe import Markup
+
+from seg import segment
 
 # This is all to ensure the two models contain identical formatting.
 # Two separate models are maintained because Traditional and Simplified characters
@@ -125,9 +126,7 @@ TermEntry = namedtuple(
 )
 
 
-def deck(
-    dict_path: pathlib.Path, char_set: str, input_path: pathlib.Path, deck_name: str
-):
+def deck(dict_path: pathlib.Path, char_set: str, sub_text: str, deck_name: str):
     ce_dict = defaultdict(list)
     with open(dict_path, encoding="utf-8") as dict_text:
         for line in dict_text:
@@ -154,7 +153,7 @@ def deck(
             ce_dict[ce_key].append(entry)
 
     to_add = dict()
-    for word in segment(input_path):
+    for word in segment(sub_text):
         if word in ce_dict:
             if word not in to_add:
                 to_add[word] = True
