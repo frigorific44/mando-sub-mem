@@ -7,7 +7,7 @@ import genanki
 from htpy import div, h2, p, span
 from markupsafe import Markup
 
-from mandosubmem.models import MandoNote, TermEntry, simplified_model, traditional_model
+from .models.chinese import MandoNote, TermEntry, simplified_model, traditional_model
 from mandosubmem.seg import segment
 
 
