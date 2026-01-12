@@ -7,8 +7,8 @@ import genanki
 from htpy import div, h2, p, span
 from markupsafe import Markup
 
-from models import MandoNote, TermEntry, simplified_model, traditional_model
-from seg import segment
+from mandosubmem.models import MandoNote, TermEntry, simplified_model, traditional_model
+from mandosubmem.seg import segment
 
 
 def deck(dict_path: pathlib.Path, char_set: str, sub_text: str, deck_name: str):

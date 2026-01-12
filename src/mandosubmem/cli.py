@@ -1,11 +1,11 @@
 import argparse
 import pathlib
 
-import deck
-import ext
+import mandosubmem.deck as deck
+import mandosubmem.ext as ext
 
 
-def main():
+def cli():
     parser = argparse.ArgumentParser(
         prog="mandosubmem",
         description="Build Anki decks from subtitles for Chinese language-learning.",
@@ -102,4 +102,4 @@ def dec_command(parser, args):
 
 
 if __name__ == "__main__":
-    main()
+    cli()
