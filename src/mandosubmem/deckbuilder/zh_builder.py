@@ -28,3 +28,38 @@ class ZH_Deck(BaseDeck):
                             word_set[str(term.word)] = True
         print(f"Segments: {len(word_set)}")
         return list(word_set)
+
+    def __lookup_fallback(self, term: str, db):
+        # Calculate combinations of substrings contained in the dictionary.
+        def defined_combinations(runes: str) -> list[list[str]]:
+            if runes == "":
+                return [[]]
+            combinations = []
+            for i in range(len(runes)):
+                curr = runes[: i + 1]
+                if curr in db:
+                    remainder = defined_combinations(runes[i + 1 :])
+                    for r_combo in remainder:
+                        combinations.append([curr, *r_combo])
+            return combinations
+
+        # Longer substrings are favored.
+        def combination_metric(substring_combination: list[str]) -> int:
+            return sum([len(w) ** 2 for w in substring_combination])
+
+        all_combinations = defined_combinations(term)
+        best_combination = max(
+            [combination_metric(w_combo) for w_combo in all_combinations]
+        )
+        best_combinations_flat = [
+            s
+            for combination in all_combinations
+            if combination_metric(combination) == best_combination
+            for s in combination
+        ]
+        return best_combinations_flat
+        for combo in best_combinations:
+            for w in combo:
+                if term not in to_add:
+                    to_add[w] = True
+                pass

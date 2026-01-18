@@ -1,8 +1,18 @@
 import collections
+import random
 
+import genanki
 from htpy import div, h1, hr
 
 from mandosubmem.deckbuilder.models.base import LangModel
+
+
+class LangNote(genanki.Note):
+    @property
+    def guid(self):
+        if self.fields is not None:
+            return genanki.guid_for(self.fields[0])
+        return super().guid()
 
 
 class BaseDeck:
@@ -42,6 +52,8 @@ class BaseDeck:
     def build(self, sub_text: str):
         segments = self.__segment(sub_text)
         entries = self.__lookup(segments)
+        deck = self.__gather(entries)
+        self.__write(deck)
 
     def __segment(self, sub_text: str) -> list[str]:
         word_set = dict()
@@ -53,13 +65,35 @@ class BaseDeck:
         return list(word_set.keys())
 
     def __lookup(self, segments: list[str]):
+        to_add = dict()
         entries = []
-        leftover = []
         with self.db.open() as db:
             for term in segments:
-                if term in db:
-                    entries.append(db[term])
-                else:
-                    leftover.append(term)
-        # TODO: Handle out-of-dictionary segments.
-        return entries
+                if term not in db:
+                    for sub_term in self.__lookup_fallback(term, db):
+                        if sub_term not in to_add:
+                            to_add[term] = True
+                elif term not in to_add:
+                    to_add[term] = True
+            for term in to_add:
+                entries.append(db[term])
+        return to_add
+
+    def __lookup_fallback(self, term: str, db):
+        """
+        Return potentionally less-accurate terms found within the database
+        in place of a full lookup failure.
+        """
+        return []
+
+    def __gather(self, entries):
+        new_deck = genanki.Deck(
+            deck_id=random.randrange(1 << 30, 1 << 31), name=f"SubMem::{self.name}"
+        )
+        print(f"Notes: {len(entries)}")
+        for term in entries:
+            new_note = LangNote(model=self.model, fields=[*self.fields])
+            new_deck.add_note(new_note)
+
+    def __write(self, deck):
+        genanki.Package(deck).write_to_file("output.apkg")
