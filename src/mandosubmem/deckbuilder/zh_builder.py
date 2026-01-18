@@ -58,8 +58,3 @@ class ZH_Deck(BaseDeck):
             for s in combination
         ]
         return best_combinations_flat
-        for combo in best_combinations:
-            for w in combo:
-                if term not in to_add:
-                    to_add[w] = True
-                pass
