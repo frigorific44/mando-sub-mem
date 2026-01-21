@@ -61,7 +61,8 @@ def ext_command(parser, args):
         parser.print_usage()
         print("Input to extract from is not a file.")
         return
-    subs = ext.ext(input_path, int(subtitles_prompt(input_path)) - 2)
+    stream_options = ext.get_subtitle_streams(input_path)
+    subs = ext.ext(input_path, list_prompt(list(stream_options.values())))
     if args.output:
         output_path = pathlib.Path(args.output)
         output_path.write_text(subs, encoding="utf-8")
@@ -76,6 +77,19 @@ def subtitles_prompt(input_path: pathlib.Path):
     chosen = ""
     while chosen not in stream_options:
         chosen = input("Choose a stream: ")
+    return chosen
+
+
+def list_prompt(prompt_list):
+    for i in range(len(prompt_list)):
+        print(f"{i}: {prompt_list[i]}")
+    chosen = -1
+    while chosen < 0 or chosen >= len(prompt_list):
+        input_str = input(f"Choose (0 - {len(prompt_list) - 1}): ")
+        try:
+            chosen = int(input_str)
+        except ValueError:
+            pass
     return chosen
 
 
