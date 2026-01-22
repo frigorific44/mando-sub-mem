@@ -14,9 +14,10 @@ class EntryStore:
         if self._db:
             return self._db
         if not self._datapath.exists():
-            with self._datapath.open(mode="w") as f:
-                self._db = self._get_entries(self._Entry)
-                json.dump(self._db, f)
+            self._db = self._get_entries(self._Entry)
+            if not self._db:
+                with self._datapath.open(mode="w") as f:
+                    json.dump(self._db, f)
         else:
             with self._datapath.open(mode="r") as f:
                 self._db = json.load(f)
