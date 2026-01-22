@@ -1,18 +1,31 @@
-from typing import NamedTuple
-from collections.abc import Callable
+import json
 import pathlib
-import shelve
 
 
 class EntryStore:
-    def __init__(self, entry: NamedTuple, get_entries: Callable[[], dict]):
+    def __init__(self, entry, get_entries):
         self._Entry = entry
-        self._datapath = pathlib.Path(type(entry).__name__)
+        self._datapath = pathlib.Path(__file__).parent.joinpath(entry.__name__)
         self._get_entries = get_entries
+        self._db = None
 
-    def open(self):
+    @property
+    def db(self):
+        if self._db:
+            return self._db
         if not self._datapath.exists():
-            with shelve.open(self._datapath, flag="n") as db:
-                for key, entry in self._get_entries().items():
-                    db[key] = self._Entry(entry)
-        return shelve.open(self._datapath, flag="r")
+            with self._datapath.open(mode="w") as f:
+                self._db = self._get_entries(self._Entry)
+                json.dump(self._db, f)
+        else:
+            with self._datapath.open(mode="r") as f:
+                self._db = json.load(f)
+        return self._db
+
+    # def open(self):
+    #     if not self._datapath.exists():
+    #         with shelve.open(self._datapath, flag="n") as db:
+    #             # db.update(self._get_entries(self._Entry))
+    #             for key, entry in self._get_entries(self._Entry).items():
+    #                 db[key] = self._Entry(entry)
+    #     return shelve.open(self._datapath, flag="r")

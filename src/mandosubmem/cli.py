@@ -30,16 +30,6 @@ def cli():
         "dec", help="generate an Anki deck from subtitles."
     )
     parser_dec.add_argument(
-        "-d", "--dictionary", required=True, help="a CC-CEDICT dictionary file"
-    )
-    parser_dec.add_argument(
-        "-c",
-        "--char-set",
-        choices=["traditional", "simplified"],
-        required=True,
-        help="whether the subtitles and generated cards are targeting Traditional or Simplified Chinese",
-    )
-    parser_dec.add_argument(
         "-i",
         "--input",
         required=True,
@@ -61,23 +51,14 @@ def ext_command(parser, args):
         parser.print_usage()
         print("Input to extract from is not a file.")
         return
-    stream_options = ext.get_subtitle_streams(input_path)
-    subs = ext.ext(input_path, list_prompt(list(stream_options.values())))
+    subs = ext.ext(
+        input_path, list_prompt(list(ext.get_subtitle_streams(input_path).values()))
+    )
     if args.output:
         output_path = pathlib.Path(args.output)
         output_path.write_text(subs, encoding="utf-8")
     else:
         print(subs)
-
-
-def subtitles_prompt(input_path: pathlib.Path):
-    stream_options = ext.get_subtitle_streams(input_path)
-    for k, v in stream_options.items():
-        print(f"{k}: {v}")
-    chosen = ""
-    while chosen not in stream_options:
-        chosen = input("Choose a stream: ")
-    return chosen
 
 
 def list_prompt(prompt_list):
@@ -94,12 +75,7 @@ def list_prompt(prompt_list):
 
 
 def dec_command(parser, args):
-    dict_path = pathlib.Path(args.dictionary)
     input_path = pathlib.Path(args.input)
-    if not dict_path.is_file():
-        parser.print_usage()
-        print("Dictionary is not a file path.")
-        return
     if not input_path.is_file():
         parser.print_usage()
         print("Input is not a file.")
@@ -111,8 +87,12 @@ def dec_command(parser, args):
     if input_path.suffix == ".srt":
         subs = input_path.read_text(encoding="utf-8")
     else:
-        subs = ext.ext(input_path, int(subtitles_prompt(input_path)) - 2)
-    deck.deck(dict_path, args.char_set, subs, args.name)
+        subs = ext.ext(
+            input_path, list_prompt(list(ext.get_subtitle_streams(input_path).values()))
+        )
+    deck_choices = list(deck.decks.keys())
+    deck_choice = list_prompt(deck_choices)
+    deck.decks[deck_choices[deck_choice]].build(subs)
 
 
 if __name__ == "__main__":

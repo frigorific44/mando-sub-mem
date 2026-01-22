@@ -4,6 +4,7 @@ import random
 import genanki
 from htpy import div, h1, hr
 
+from mandosubmem.deckbuilder.entrystore import EntryStore
 from mandosubmem.deckbuilder.models.base import LangModel
 
 
@@ -23,7 +24,7 @@ class BaseDeck:
         div(".hide-rcg-f")["{{Gloss}}"],
     ]
 
-    def __init__(self, model_id, name, db):
+    def __init__(self, model_id, name, db_initialization):
         """
         Args:
         model_id: An integer which should be generated once for the card type and hardcoded.
@@ -31,7 +32,8 @@ class BaseDeck:
         """
         self.model_id = model_id
         self.name = name
-        self.db = db
+        self.db_initialization = db_initialization
+        self._entrystore = None
 
     @property
     def model(self):
@@ -47,7 +49,11 @@ class BaseDeck:
     def Entry(self):
         return collections.namedtuple(self.name, self.fields)
 
-    # basestore = EntryStore(Entry, zh_get_entries)
+    @property
+    def db(self):
+        if not self._entrystore:
+            self._entrystore = EntryStore(self.Entry, self.db_initialization)
+        return self._entrystore.db
 
     def build(self, sub_text: str):
         segments = self.__segment(sub_text)
@@ -67,16 +73,15 @@ class BaseDeck:
     def __lookup(self, segments: list[str]):
         to_add = dict()
         entries = []
-        with self.db.open() as db:
-            for term in segments:
-                if term not in db:
-                    for sub_term in self.__lookup_fallback(term, db):
-                        if sub_term not in to_add:
-                            to_add[term] = True
-                elif term not in to_add:
-                    to_add[term] = True
-            for term in to_add:
-                entries.append(db[term])
+        for term in segments:
+            if term not in self.db:
+                for sub_term in self.__lookup_fallback(term, self.db):
+                    if sub_term not in to_add:
+                        to_add[term] = True
+            elif term not in to_add:
+                to_add[term] = True
+        for term in to_add:
+            entries.append(self.db[term])
         return to_add
 
     def __lookup_fallback(self, term: str, db):
@@ -94,6 +99,7 @@ class BaseDeck:
         for term in entries:
             new_note = LangNote(model=self.model, fields=[*self.fields])
             new_deck.add_note(new_note)
+        return new_deck
 
     def __write(self, deck):
         genanki.Package(deck).write_to_file("output.apkg")
