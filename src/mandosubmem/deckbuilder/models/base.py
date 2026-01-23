@@ -64,7 +64,7 @@ class LangModel(genanki.Model):
         Args:
         model_id: An integer which should be generated once and hardcoded.
         name: A unique name.
-        fields: A list of language-specific fields added on top of 'Term' and 'Gloss'.
+        fields: A list of fields provided by BaseDeck or a subclass.
         template: The full card template to be modified for front, back, etc. with CSS.
             Should be an htpy object or a string without HTML tags.
         css: Additional CSS.
@@ -72,7 +72,7 @@ class LangModel(genanki.Model):
         super().__init__(
             model_id=model_id,
             name=name,
-            fields=[*fields],
+            fields=[{"name": field} for field in fields],
             templates=[
                 {
                     "name": "Recognition",

@@ -6,16 +6,16 @@ from mandosubmem.deckbuilder.base import BaseDeck
 
 class ZH_Deck(BaseDeck):
     template = [
-        h1(".hide-rcl-f")[ruby["{{Term}}", rt(".hide-rcg-f")["{{Pinyin}}"]]],
+        h1(".hide-rcl-f")[ruby["{{term}}", rt(".hide-rcg-f")["{{pinyin}}"]]],
         hr,
-        div(".hide-rcg-f")["{{Gloss}}"],
+        div(".hide-rcg-f")["{{gloss}}"],
     ]
 
     @property
     def fields(self):
-        return super().fields + ["Pinyin"]
+        return super().fields + ["pinyin"]
 
-    def __segment(self, sub_text: str) -> list[str]:
+    def segment(self, sub_text: str) -> list[str]:
         word_set = dict()
         for line in sub_text.split("\n"):
             if line != "" and not line[0].isdigit():
@@ -29,7 +29,7 @@ class ZH_Deck(BaseDeck):
         print(f"Segments: {len(word_set)}")
         return list(word_set)
 
-    def __lookup_fallback(self, term: str, db):
+    def lookup_fallback(self, term: str):
         # Calculate combinations of substrings contained in the dictionary.
         def defined_combinations(runes: str) -> list[list[str]]:
             if runes == "":
@@ -37,7 +37,7 @@ class ZH_Deck(BaseDeck):
             combinations = []
             for i in range(len(runes)):
                 curr = runes[: i + 1]
-                if curr in db:
+                if curr in self.db:
                     remainder = defined_combinations(runes[i + 1 :])
                     for r_combo in remainder:
                         combinations.append([curr, *r_combo])

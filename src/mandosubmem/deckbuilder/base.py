@@ -17,11 +17,11 @@ class LangNote(genanki.Note):
 
 
 class BaseDeck:
-    fields = ["Term", "Gloss"]
+    fields = ["term", "gloss"]
     template = [
-        h1(".hide-rcl-f")["{{Term}}"],
+        h1(".hide-rcl-f")["{{term}}"],
         hr,
-        div(".hide-rcg-f")["{{Gloss}}"],
+        div(".hide-rcg-f")["{{gloss}}"],
     ]
 
     def __init__(self, model_id, name, db_initialization):
@@ -56,12 +56,12 @@ class BaseDeck:
         return self._entrystore.db
 
     def build(self, sub_text: str):
-        segments = self.__segment(sub_text)
-        entries = self.__lookup(segments)
-        deck = self.__gather(entries)
-        self.__write(deck)
+        segments = self.segment(sub_text)
+        entries = self.lookup(segments)
+        deck = self.gather(entries)
+        self.write(deck)
 
-    def __segment(self, sub_text: str) -> list[str]:
+    def segment(self, sub_text: str) -> list[str]:
         word_set = dict()
         for line in sub_text.split("\n"):
             if line != "" and not line[0].isdigit():
@@ -70,36 +70,36 @@ class BaseDeck:
                         word_set[term] = True
         return list(word_set.keys())
 
-    def __lookup(self, segments: list[str]):
+    def lookup(self, segments: list[str]):
         to_add = dict()
         entries = []
         for term in segments:
             if term not in self.db:
-                for sub_term in self.__lookup_fallback(term, self.db):
+                for sub_term in self.lookup_fallback(term):
                     if sub_term not in to_add:
-                        to_add[term] = True
+                        to_add[sub_term] = True
             elif term not in to_add:
                 to_add[term] = True
         for term in to_add:
             entries.append(self.db[term])
-        return to_add
+        return entries
 
-    def __lookup_fallback(self, term: str, db):
+    def lookup_fallback(self, term: str):
         """
         Return potentionally less-accurate terms found within the database
         in place of a full lookup failure.
         """
         return []
 
-    def __gather(self, entries):
+    def gather(self, entries):
         new_deck = genanki.Deck(
             deck_id=random.randrange(1 << 30, 1 << 31), name=f"SubMem::{self.name}"
         )
         print(f"Notes: {len(entries)}")
-        for term in entries:
-            new_note = LangNote(model=self.model, fields=[*self.fields])
+        for entry in entries:
+            new_note = LangNote(model=self.model, fields=list(entry))
             new_deck.add_note(new_note)
         return new_deck
 
-    def __write(self, deck):
+    def write(self, deck):
         genanki.Package(deck).write_to_file("output.apkg")

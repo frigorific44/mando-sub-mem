@@ -18,28 +18,31 @@ def initialize(Entry, char_set):
     # Entries are not one-to-one with the representative character,
     # so we deal with that first.
     ce_dict = defaultdict(list)
-    for line in dict_text:
-        if not line.startswith("#"):
-            break
-    for line in dict_text:
-        line = line.strip("\n")
-        line = tone_numbers_to_marks(line)
-        sense_boundary = line.strip("/").split("/")
-        senses = sense_boundary[1:]
-        pinyin_boundary = sense_boundary[0].split("[")
-        pinyin = pinyin_boundary[-1].rstrip("] ")
-        term_boundary = pinyin_boundary[0].split()
-        traditional = term_boundary[0]
-        simplified = term_boundary[1]
-        if char_set == "traditional":
-            key_char = traditional
-            other_char = simplified
-        else:
-            key_char = simplified
-            other_char = traditional
-        gloss = [h2[span[other_char], span[pinyin]], (p[sense] for sense in senses)]
-        entry = Entry(term=key_char, pinyin=pinyin, gloss=gloss)
-        ce_dict[key_char].append(entry)
+    for line in dict_text.split("\n"):
+        try:
+            if line.startswith("#"):
+                continue
+            stripped_line = line.strip()
+            toned_line = tone_numbers_to_marks(stripped_line)
+            sense_boundary = toned_line.strip("/").split("/")
+            senses = sense_boundary[1:]
+            pinyin_boundary = sense_boundary[0].split("[")
+            pinyin = pinyin_boundary[-1].rstrip("] ")
+            term_boundary = pinyin_boundary[0].split()
+            traditional = term_boundary[0]
+            simplified = term_boundary[1]
+            if char_set == "traditional":
+                key_char = traditional
+                other_char = simplified
+            else:
+                key_char = simplified
+                other_char = traditional
+            gloss = [h2[span[other_char], span[pinyin]], (p[sense] for sense in senses)]
+            entry = Entry(term=key_char, pinyin=pinyin, gloss=gloss)
+            ce_dict[key_char].append(entry)
+        except IndexError as err:
+            print(f"Unhandled line: {line}")
+            print(err)
     return {k: reconcile_entries(Entry, v) for k, v in ce_dict.items()}
 
 
@@ -72,16 +75,16 @@ def tone_numbers_to_marks(s: str) -> str:
 
 
 def reconcile_entries(Entry, entries):
-    if len(entries) == 1:
-        return entries[0]
     # Set fields that are the same across all dictionary entries.
-    equal_entry = functools.reduce(
-        lambda x, y: [i if i == j else "" for i, j in zip(x, y)], entries
+    equal_entry = list(
+        functools.reduce(
+            lambda x, y: [i if i == j else "" for i, j in zip(x, y)], entries
+        )
     )
     # Set gloss, sorted by pinyin with proper nouns last.
-    equal_entry[Entry()._fields.index("gloss")] = div[
-        sorted(entries, key=lambda t_entry: t_entry.pinyin.swapcase())
-    ]
+    equal_entry[Entry._fields.index("gloss")] = str(
+        div[sorted(entries, key=lambda t_entry: t_entry.pinyin.swapcase())]
+    )
     return Entry(*equal_entry)
 
 
