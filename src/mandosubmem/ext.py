@@ -1,3 +1,5 @@
+import itertools
+import re
 import subprocess
 import shutil
 import pathlib
@@ -50,3 +52,28 @@ def ext(input_path: pathlib.Path, stream_n: int) -> str:
     ]
     ff_p = subprocess.run(ff_args, encoding="utf-8", capture_output=True)
     return ff_p.stdout
+
+
+def parse_srt(sub_text: str) -> list[str]:
+    """
+    Parse a string containing SubRip formatted subtitles and return the subtitle text.
+    """
+    timestammp_exp = re.compile(r"\d\d:\d\d:\d\d,\d\d\d --> \d\d:\d\d:\d\d,\d\d\d")
+    subtitle_lines = []
+    for k, group in itertools.groupby(sub_text.splitlines(), key=bool):
+        # If grouped on Falsey value (empty strings), skip.
+        if not k:
+            continue
+        lines = list(group)
+        # Should be strictly increasing starting from 1,
+        # but we'll be generous so as to not lose data.
+        if not lines[0].strip().isdigit():
+            print("Malformed subtitle, index missing:")
+            print(lines)
+            continue
+        if not timestammp_exp.fullmatch(lines[1].strip()):
+            print("Malformed subtitle, incorrect timestamp:")
+            print(lines)
+        else:
+            subtitle_lines.extend(lines[2:])
+    return subtitle_lines
