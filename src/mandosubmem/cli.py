@@ -85,11 +85,12 @@ def dec_command(parser, args):
         print("Deck name cannot be an empty string.")
         return
     if input_path.suffix == ".srt":
-        subs = input_path.read_text(encoding="utf-8")
+        sub_text = input_path.read_text(encoding="utf-8")
     else:
-        subs = ext.ext(
+        sub_text = ext.ext(
             input_path, list_prompt(list(ext.get_subtitle_streams(input_path).values()))
         )
+    subs = ext.parse_srt(sub_text)
     deck_choices = list(deck.decks.keys())
     deck_choice = list_prompt(deck_choices)
     deck.decks[deck_choices[deck_choice]].build(subs)

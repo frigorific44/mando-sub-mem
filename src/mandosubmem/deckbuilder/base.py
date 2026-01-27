@@ -55,19 +55,18 @@ class BaseDeck:
             self._entrystore = EntryStore(self.Entry, self.db_initialization)
         return self._entrystore.db
 
-    def build(self, sub_text: str):
-        segments = self.segment(sub_text)
+    def build(self, subs: list[str]):
+        segments = self.segment(subs)
         entries = self.lookup(segments)
         deck = self.gather(entries)
         self.write(deck)
 
-    def segment(self, sub_text: str) -> list[str]:
+    def segment(self, subs: list[str]) -> list[str]:
         word_set = dict()
-        for line in sub_text.split("\n"):
-            if line != "" and not line[0].isdigit():
-                for term in line.split():
-                    if term not in word_set:
-                        word_set[term] = True
+        for sub in subs:
+            for term in sub.split():
+                if term not in word_set:
+                    word_set[term] = True
         return list(word_set.keys())
 
     def lookup(self, segments: list[str]):
