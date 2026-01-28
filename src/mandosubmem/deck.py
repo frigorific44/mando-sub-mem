@@ -2,7 +2,6 @@ import functools
 import gzip
 import requests
 from mandosubmem.deckbuilder.zh_builder import ZH_Deck
-import pathlib
 import re
 from collections import defaultdict
 
