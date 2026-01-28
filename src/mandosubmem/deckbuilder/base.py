@@ -9,6 +9,7 @@ from mandosubmem.deckbuilder.models.base import LangModel
 
 
 class LangNote(genanki.Note):
+    # GUID is generated on the term only, to allow updating deck information.
     @property
     def guid(self):
         if self.fields is not None:
@@ -29,6 +30,7 @@ class BaseDeck:
         Args:
         model_id: An integer which should be generated once for the card type and hardcoded.
         name: A unique name.
+        db_initialization: A function which returns a dictionary of terms to construct cards on.
         """
         self.model_id = model_id
         self.name = name
@@ -51,17 +53,26 @@ class BaseDeck:
 
     @property
     def db(self):
+        """
+        Returns fully-cached read-write safe copy of the term dictionary.
+        """
         if not self._entrystore:
             self._entrystore = EntryStore(self.Entry, self.db_initialization)
         return self._entrystore.db
 
     def build(self, subs: list[str]):
+        """
+        From a list of subtitle lines, constructs a deck.
+        """
         segments = self.segment(subs)
         entries = self.lookup(segments)
         deck = self.gather(entries)
         self.write(deck)
 
     def segment(self, subs: list[str]) -> list[str]:
+        """
+        Segments subtitle lines into possible memorization terms.
+        """
         word_set = dict()
         for sub in subs:
             for term in sub.split():
@@ -70,6 +81,9 @@ class BaseDeck:
         return list(word_set.keys())
 
     def lookup(self, segments: list[str]):
+        """
+        Return segments confirmed to be in the term dictionary.
+        """
         to_add = dict()
         entries = []
         for term in segments:
@@ -86,11 +100,14 @@ class BaseDeck:
     def lookup_fallback(self, term: str):
         """
         Return potentionally less-accurate terms found within the database
-        in place of a full lookup failure.
+        instead of a full lookup failure.
         """
         return []
 
     def gather(self, entries):
+        """
+        Construct the deck from confirmed terms.
+        """
         new_deck = genanki.Deck(
             deck_id=random.randrange(1 << 30, 1 << 31), name=f"SubMem::{self.name}"
         )
