@@ -1,4 +1,4 @@
-import pyhanlp
+import jieba.posseg
 from htpy import div, h1, hr, rt, ruby
 
 from mandosubmem.deckbuilder.base import BaseDeck
@@ -18,13 +18,10 @@ class ZH_Deck(BaseDeck):
     def segment(self, subs: list[str]) -> list[str]:
         word_set = dict()
         for sub in subs:
-            for term in pyhanlp.HanLP.segment(sub):
-                if (
-                    str(term.nature) not in set(["w", "nx"])
-                    and not str(term.word).isdigit()
-                ):
-                    if str(term.word) not in word_set:
-                        word_set[str(term.word)] = True
+            for term, tag in jieba.posseg.cut(sub):
+                if tag not in set(["x"]) and not term.isdigit():
+                    if term not in word_set:
+                        word_set[term] = True
         print(f"Segments: {len(word_set)}")
         return list(word_set)
 
@@ -47,6 +44,8 @@ class ZH_Deck(BaseDeck):
             return sum([len(w) ** 2 for w in substring_combination])
 
         all_combinations = defined_combinations(term)
+        if not all_combinations:
+            return []
         best_combination = max(
             [combination_metric(w_combo) for w_combo in all_combinations]
         )

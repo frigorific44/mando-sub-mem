@@ -13,11 +13,11 @@ wheels = [
 
 [[package]]
 name = "certifi"
-version = "2025.11.12"
+version = "2026.1.4"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/a2/8c/58f469717fa48465e4a50c014a0400602d3c437d7c0c468e17ada824da3a/certifi-2025.11.12.tar.gz", hash = "sha256:d8ab5478f2ecd78af242878415affce761ca6bc54a22a27e026d7c25357c3316", size = 160538, upload-time = "2025-11-12T02:54:51.517Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/e0/2d/a891ca51311197f6ad14a7ef42e2399f36cf2f9bd44752b3dc4eab60fdc5/certifi-2026.1.4.tar.gz", hash = "sha256:ac726dd470482006e014ad384921ed6438c457018f4b3d204aea4281258b2120", size = 154268, upload-time = "2026-01-04T02:42:41.825Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/70/7d/9bc192684cea499815ff478dfcdc13835ddf401365057044fb721ec6bddb/certifi-2025.11.12-py3-none-any.whl", hash = "sha256:97de8790030bbd5c2d96b7ec782fc2f7820ef8dba6db909ccf95449f2d062d4b", size = 159438, upload-time = "2025-11-12T02:54:49.735Z" },
+    { url = "https://files.pythonhosted.org/packages/e6/ad/3cc14f097111b4de0040c83a525973216457bbeeb63739ef1ed275c1c021/certifi-2026.1.4-py3-none-any.whl", hash = "sha256:9943707519e4add1115f44c2bc244f782c0249876bf51b6599fee1ffbedd685c", size = 152900, upload-time = "2026-01-04T02:42:40.15Z" },
 ]
 
 [[package]]
@@ -104,15 +104,6 @@ wheels = [
 ]
 
 [[package]]
-name = "hanlp-downloader"
-version = "0.0.25"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "requests" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/b4/4d/fef63be131c99e7f42f866175cc47be834ae0b5afe6f3e38a5b3d090fc2b/hanlp_downloader-0.0.25.tar.gz", hash = "sha256:11081cd55d8ad84ba909fe870dd10ef5e26b720d254f73f800b281cfb6c5d1b4", size = 13873, upload-time = "2021-09-04T19:17:00.182Z" }
-
-[[package]]
 name = "htpy"
 version = "25.12.0"
 source = { registry = "https://pypi.org/simple" }
@@ -143,23 +134,10 @@ wheels = [
 ]
 
 [[package]]
-name = "jpype1"
-version = "1.6.0"
+name = "jieba"
+version = "0.42.1"
 source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "packaging" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/34/49/6090a131d84b22c6aae13b1853092028b060fd17da1af87c0e42ad69d50f/jpype1-1.6.0.tar.gz", hash = "sha256:2d46b2a14f8f0e6f17d8aa22b4fc3a64b2790851ebf1409ad79a37c698fd6e9a", size = 1057888, upload-time = "2025-07-07T14:04:11.244Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/3f/1b/7167cfb702cfbcb17b0973150608f9cb92c3f409ebaaff655f7389617766/jpype1-1.6.0-cp313-cp313-macosx_10_13_universal2.whl", hash = "sha256:ce1da9ff01010a4529de194aecc053bfc8ab25440ea6b63579ef8c8d381da21d", size = 582384, upload-time = "2025-07-07T13:50:47.418Z" },
-    { url = "https://files.pythonhosted.org/packages/c0/48/8ae425d8842bc76eb51052bbea5941dac230c8f6b58614ef2b7cb2da1a74/jpype1-1.6.0-cp313-cp313-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:4a387430cd4f3f68761013dca7f71b79d8d64b47dfd56eedcbd44c894d98d7f2", size = 468237, upload-time = "2025-07-07T13:50:48.925Z" },
-    { url = "https://files.pythonhosted.org/packages/ef/2f/dbdc15aa99404dda0315a9883add7422c9ac7acce28ce24b66c89052c2fb/jpype1-1.6.0-cp313-cp313-manylinux2014_i686.manylinux_2_17_i686.whl", hash = "sha256:6c9d99f41a5d05a8a2b6aeda796f646904c1c2b68aed0cc9a3bbc165483d9e1e", size = 511905, upload-time = "2025-07-07T13:50:50.87Z" },
-    { url = "https://files.pythonhosted.org/packages/00/0d/50fcdd6d3bb42a87cbda8b04fc72283a9c6d955ada0d011190ce31e0e027/jpype1-1.6.0-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:55ba7257988a69bee84f7cd1444131725d5447999149fdafdba25bf46e4b1a3f", size = 496001, upload-time = "2025-07-07T13:50:52.711Z" },
-    { url = "https://files.pythonhosted.org/packages/4f/b8/25214a9ebecbd31447b685500dca5fe2ac070df38358d6823f591a8ce52e/jpype1-1.6.0-cp313-cp313-win_amd64.whl", hash = "sha256:ef8dd72442d91cde7e5eefef24ab71323cdd4137283a59f79d265a6620f7d0ab", size = 355727, upload-time = "2025-07-07T13:51:00.402Z" },
-    { url = "https://files.pythonhosted.org/packages/29/a0/b2347572998020de8ce3ee0a285a1b84b052b522e8d452ee9ad330570918/jpype1-1.6.0-cp313-cp313t-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:dc0c1c8b989b9857f87648980a746084b323858b0450225eab3642bb674645d6", size = 471150, upload-time = "2025-07-07T13:50:54.254Z" },
-    { url = "https://files.pythonhosted.org/packages/7c/62/5e0f64a185f37303d0dd07e7b7a927cd5237fdc3c8176add949ed8cafaa2/jpype1-1.6.0-cp313-cp313t-manylinux2014_i686.manylinux_2_17_i686.whl", hash = "sha256:cbbba16381ccd23530ad4ef09f7b2b1b12bd7fd0f6ca9fe4c7b4e3da8fe4cf63", size = 514015, upload-time = "2025-07-07T13:50:56.299Z" },
-    { url = "https://files.pythonhosted.org/packages/72/68/84050ed2679e2d2ee2030a60d3e5a59a29d0533cd03fd8d9891e36592b0f/jpype1-1.6.0-cp313-cp313t-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:1a3814e4f65d67e36bdb03b8851d5ece8d7a408aa3a24251ea0609bb8fba77dd", size = 497229, upload-time = "2025-07-07T13:50:57.842Z" },
-]
+sdist = { url = "https://files.pythonhosted.org/packages/c6/cb/18eeb235f833b726522d7ebed54f2278ce28ba9438e3135ab0278d9792a2/jieba-0.42.1.tar.gz", hash = "sha256:055ca12f62674fafed09427f176506079bc135638a14e23e25be909131928db2", size = 19214172, upload-time = "2020-01-20T14:27:23.5Z" }
 
 [[package]]
 name = "mandosubmem"
@@ -168,7 +146,8 @@ source = { editable = "." }
 dependencies = [
     { name = "genanki" },
     { name = "htpy" },
-    { name = "pyhanlp" },
+    { name = "jieba" },
+    { name = "requests" },
 ]
 
 [package.dev-dependencies]
@@ -180,7 +159,8 @@ dev = [
 requires-dist = [
     { name = "genanki", specifier = ">=0.13.1" },
     { name = "htpy", specifier = ">=25.12.0" },
-    { name = "pyhanlp", specifier = ">=0.1.89" },
+    { name = "jieba", specifier = ">=0.42.1" },
+    { name = "requests", specifier = ">=2.32.5" },
 ]
 
 [package.metadata.requires-dev]
@@ -266,19 +246,6 @@ wheels = [
 ]
 
 [[package]]
-name = "pyhanlp"
-version = "0.1.89"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "hanlp-downloader" },
-    { name = "jpype1" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/54/22/9e67668ed00b5a624c778c23b127b58af121ed8170a632e869d48fe99ccb/pyhanlp-0.1.89.tar.gz", hash = "sha256:a4af30e92d3a6402fbbe2282dc6104480cd1834f08adb881d38a0c6240820796", size = 33132, upload-time = "2025-01-16T02:48:30.849Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/5d/ff/163a2a30477cda2cce486f348e1ce31c241bd82c668e681da64eb09cd85c/pyhanlp-0.1.89-py3-none-any.whl", hash = "sha256:c6f7e646f91579a1b5dcbee4dc7bfa7b1a0f307682dc3fe0ffea674a1d17c9ee", size = 29918, upload-time = "2025-01-16T02:48:28.568Z" },
-]
-
-[[package]]
 name = "pytest"
 version = "9.0.2"
 source = { registry = "https://pypi.org/simple" }
@@ -347,9 +314,9 @@ wheels = [
 
 [[package]]
 name = "urllib3"
-version = "2.6.2"
+version = "2.6.3"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/1e/24/a2a2ed9addd907787d7aa0355ba36a6cadf1768b934c652ea78acbd59dcd/urllib3-2.6.2.tar.gz", hash = "sha256:016f9c98bb7e98085cb2b4b17b87d2c702975664e4f060c6532e64d1c1a5e797", size = 432930, upload-time = "2025-12-11T15:56:40.252Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/c7/24/5f1b3bdffd70275f6661c76461e25f024d5a38a46f04aaca912426a2b1d3/urllib3-2.6.3.tar.gz", hash = "sha256:1b62b6884944a57dbe321509ab94fd4d3b307075e0c2eae991ac71ee15ad38ed", size = 435556, upload-time = "2026-01-07T16:24:43.925Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/6d/b9/4095b668ea3678bf6a0af005527f39de12fb026516fb3df17495a733b7f8/urllib3-2.6.2-py3-none-any.whl", hash = "sha256:ec21cddfe7724fc7cb4ba4bea7aa8e2ef36f607a4bab81aa6ce42a13dc3f03dd", size = 131182, upload-time = "2025-12-11T15:56:38.584Z" },
+    { url = "https://files.pythonhosted.org/packages/39/08/aaaad47bc4e9dc8c725e68f9d04865dbcb2052843ff09c97b08904852d84/urllib3-2.6.3-py3-none-any.whl", hash = "sha256:bf272323e553dfb2e87d9bfd225ca7b0f467b919d7bbd355436d3fd37cb0acd4", size = 131584, upload-time = "2026-01-07T16:24:42.685Z" },
 ]
