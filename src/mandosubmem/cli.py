@@ -1,8 +1,7 @@
 import argparse
 import pathlib
 
-import mandosubmem.deck as deck
-import mandosubmem.ext as ext
+from . import deck, ext
 
 
 def cli():

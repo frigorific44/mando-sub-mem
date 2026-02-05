@@ -1,7 +1,7 @@
 import jieba.posseg
 from htpy import div, h1, hr, rt, ruby
 
-from mandosubmem.deckbuilder.base import BaseDeck
+from .base import BaseDeck
 
 
 class ZH_Deck(BaseDeck):

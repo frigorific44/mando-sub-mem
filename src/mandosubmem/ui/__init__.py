@@ -1,6 +1,7 @@
 from aqt import mw
 from aqt.qt import QDialog, QFileDialog
 
+from ..deck import decks
 from .importdialog import Ui_ImportDialog
 
 
@@ -9,6 +10,7 @@ class ImportDialog(QDialog, Ui_ImportDialog):
         QDialog.__init__(self, mw)
         self.setupUi(self)
         self.filePushButton.clicked.connect(self.onBrowse)
+        self.dictionaryComboBox.addItems(decks.keys())
 
     def onBrowse(self):
         fileDialog = QFileDialog(self)

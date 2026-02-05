@@ -4,8 +4,8 @@ import random
 import genanki
 from htpy import div, h1, hr
 
-from mandosubmem.deckbuilder.entrystore import EntryStore
-from mandosubmem.deckbuilder.models.base import LangModel
+from .entrystore import EntryStore
+from .models.base import LangModel
 
 
 class LangNote(genanki.Note):
