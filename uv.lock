@@ -331,7 +331,7 @@ wheels = [
 ]
 
 [[package]]
-name = "mandosubmem"
+name = "subtitleterms"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [

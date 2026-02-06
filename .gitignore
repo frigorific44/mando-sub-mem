@@ -14,4 +14,4 @@ wheels/
 *.txt
 *.apkg
 # Dictionary files
-src/mandosubmem/deckbuilder/data
+src/**/deckbuilder/data

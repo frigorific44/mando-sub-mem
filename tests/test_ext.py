@@ -1,4 +1,4 @@
-from mandosubmem.ext import parse_srt
+from subtitleterms.ext import parse_srt
 
 
 def without_x(ls, *args):

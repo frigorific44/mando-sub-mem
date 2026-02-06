@@ -6,7 +6,7 @@ from . import deck, ext
 
 def cli():
     parser = argparse.ArgumentParser(
-        prog="mandosubmem",
+        prog="subtitleterms",
         description="Build Anki decks from subtitles for Chinese language-learning.",
     )
     subparsers = parser.add_subparsers(

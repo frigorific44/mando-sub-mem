@@ -1,28 +1,24 @@
 [project]
-name = "mandosubmem"
+name = "subtitleterms"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-authors = [
-    { name = "Derek Enlow", email = "derekenlow@gmail.com" }
-]
+authors = [{ name = "Derek Enlow", email = "derekenlow@gmail.com" }]
 requires-python = ">=3.13"
 dependencies = [
-    "aqt[qt6]>=25.9.2",
-    "genanki>=0.13.1",
-    "htpy>=25.12.0",
-    "jieba>=0.42.1",
-    "requests>=2.32.5",
+  "aqt[qt6]>=25.9.2",
+  "genanki>=0.13.1",
+  "htpy>=25.12.0",
+  "jieba>=0.42.1",
+  "requests>=2.32.5",
 ]
 
 [project.scripts]
-mandosubmem = "mandosubmem.cli:cli"
+subtitleterms = "subtitleterms.cli:cli"
 
 [build-system]
-requires = ["uv_build>=0.9.24,<0.10.0"]
-build-backend = "uv_build"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [dependency-groups]
-dev = [
-    "pytest>=9.0.2",
-]
+dev = ["pytest>=9.0.2"]
