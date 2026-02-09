@@ -13,12 +13,20 @@ dependencies = [
   "requests>=2.32.5",
 ]
 
+[dependency-groups]
+dev = ["pytest>=9.0.2"]
+
 [project.scripts]
 subtitleterms = "subtitleterms.cli:cli"
 
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling", "hatch-zipped-directory"]
 build-backend = "hatchling.build"
 
-[dependency-groups]
-dev = ["pytest>=9.0.2"]
+[tool.hatch.envs.default]
+installer = "uv"
+
+[tool.hatch.build.targets.zipped-directory]
+install-name = ""
+[tool.hatch.build.targets.zipped-directory.sources]
+"src/subtitleterms" = ""
