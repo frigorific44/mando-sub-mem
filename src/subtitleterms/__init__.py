@@ -1,11 +1,18 @@
 # import the main window object (mw) from aqt
+import os
+import sys
+
 from aqt import mw
 from aqt.qt import QAction
 
 # import the "show info" tool from utils.py
-from aqt.utils import qconnect, showInfo
+from aqt.utils import qconnect
 
-from .ui import ImportDialog
+parent_dir = os.path.abspath(os.path.dirname(__file__))
+vendor_dir = os.path.join(parent_dir, "vendor")
+sys.path.append(vendor_dir)
+
+from .ui import ImportDialog  # noqa: E402
 
 # We're going to add a menu item below. First we want to create a function to
 # be called when the menu item is activated.

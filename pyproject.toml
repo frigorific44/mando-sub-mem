@@ -30,3 +30,6 @@ installer = "uv"
 install-name = ""
 [tool.hatch.build.targets.zipped-directory.sources]
 "src/subtitleterms" = ""
+
+[tool.vendors]
+ignore = ["aqt", "requests"]
