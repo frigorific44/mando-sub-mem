@@ -6,7 +6,7 @@ readme = "README.md"
 authors = [{ name = "Derek Enlow", email = "derekenlow@gmail.com" }]
 requires-python = ">=3.13"
 dependencies = [
-  "aqt[qt6]>=25.9.2",
+  "aqt>=25.9.2",
   "genanki>=0.13.1",
   "htpy>=25.12.0",
   "jieba>=0.42.1",
