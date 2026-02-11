@@ -24,7 +24,7 @@ def testFunction() -> None:
     # cardCount = mw.col.card_count()
     # show a message box
     # showInfo("Card count: %d" % cardCount)
-    ImportDialog().show()
+    ImportDialog().getSettings()
 
 
 # create a new menu item, "test"

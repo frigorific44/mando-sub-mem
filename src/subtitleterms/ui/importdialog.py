@@ -1,4 +1,4 @@
-# Form implementation generated from reading ui file 'ui/import.ui'
+# Form implementation generated from reading ui file 'src/subtitleterms/ui/importdialog.ui'
 #
 # Created by: PyQt6 UI code generator 6.10.2
 #
@@ -30,9 +30,9 @@ class Ui_ImportDialog(object):
         self.deckLabel = QtWidgets.QLabel(parent=ImportDialog)
         self.deckLabel.setObjectName("deckLabel")
         self.verticalLayout.addWidget(self.deckLabel)
-        self.lineEdit = QtWidgets.QLineEdit(parent=ImportDialog)
-        self.lineEdit.setObjectName("lineEdit")
-        self.verticalLayout.addWidget(self.lineEdit)
+        self.nameLineEdit = QtWidgets.QLineEdit(parent=ImportDialog)
+        self.nameLineEdit.setObjectName("nameLineEdit")
+        self.verticalLayout.addWidget(self.nameLineEdit)
         spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
         self.verticalLayout.addItem(spacerItem)
         self.dictionaryLabel = QtWidgets.QLabel(parent=ImportDialog)
