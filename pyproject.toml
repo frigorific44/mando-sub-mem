@@ -14,7 +14,7 @@ dependencies = [
 ]
 
 [dependency-groups]
-dev = ["pytest>=9.0.2"]
+dev = ["hatchling>=1.28.0", "pytest>=9.0.2"]
 
 [project.scripts]
 subtitleterms = "subtitleterms.cli:cli"
@@ -28,8 +28,11 @@ installer = "uv"
 
 [tool.hatch.build.targets.zipped-directory]
 install-name = ""
+artifacts = ["src/*/vendor/*"]
 [tool.hatch.build.targets.zipped-directory.sources]
 "src/subtitleterms" = ""
+[tool.hatch.build.targets.zipped-directory.hooks.custom]
+path = "vendors.py"
 
 [tool.vendors]
 ignore = ["aqt", "requests"]
