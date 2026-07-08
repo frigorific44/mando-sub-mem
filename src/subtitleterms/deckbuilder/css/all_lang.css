@@ -9,7 +9,7 @@
 }
 
 hr {
-  background-color: #000000;
+  background-color: currentColor;
   height: 2px;
   margin: 0;
 }
